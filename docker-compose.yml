@@ -1,42 +1,61 @@
 version: "3.9"
 
 services:
-  db:
+  backend:
+    build: ./backend
+    container_name: ecommerce-backend
+    restart: always
+    ports:
+      - "5001:5000"
+    depends_on:
+      postgres-db:
+        condition: service_healthy # Menunggu database sehat
+    environment:
+      PGUSER: postgres
+      PGHOST: postgres-db
+      PGDATABASE: ecommerce_db
+      PGPASSWORD: 080425
+      PGPORT: 5432
+      JWT_SECRET: supersecretjwtkey
+    command: sh -c "sleep 10 && npm start" # Menambahkan delay 10 detik
+    networks:
+      - ecommerce-net
+
+  frontend:
+    build: ./frontend
+    container_name: ecommerce-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    command: npm run dev
+    networks:
+      - ecommerce-net
+
+  postgres-db:
     image: postgres:16
-    container_name: ecommerce-db
+    container_name: postgres-db
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 080425
       POSTGRES_DB: ecommerce_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - ecommerce-net
-    volumes:
-      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  backend:
-    build: .
-    container_name: ecommerce-backend
-    depends_on:
-      - db
-    environment:
-      DB_HOST: db
-      DB_USER: postgres
-      DB_PASSWORD: 080425
-      DB_NAME: ecommerce_db
-      DB_PORT: 5432
-    ports:
-      - "3000:3000"
-    networks:
-      - ecommerce-net
-    volumes:
-      - .:/app
-    command: npm start
+volumes:
+  postgres_data:
 
 networks:
   ecommerce-net:
-
-volumes:
-  db_data:
+    driver: bridge
