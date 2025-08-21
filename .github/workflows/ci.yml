@@ -40,11 +40,18 @@ jobs:
       - name: Wait for PostgreSQL to be ready
         run: npx wait-on tcp:5432
 
-      - name: Run database migrations (optional)
+      - name: Create database schema
         run: |
-          # Contoh cara menjalankan migrasi jika Anda memiliki migration tool
-          # npx sequelize-cli db:migrate
+          psql -h localhost -p 5432 -U ${{ secrets.PGUSER }} -d test_db -c "CREATE TABLE users (id SERIAL PRIMARY KEY, email VARCHAR(255) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, role VARCHAR(50) NOT NULL DEFAULT 'buyer');"
+          psql -h localhost -p 5432 -U ${{ secrets.PGUSER }} -d test_db -c "CREATE TABLE products (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, description TEXT NOT NULL, price DECIMAL(10, 2) NOT NULL, image_url TEXT, seller_id INTEGER NOT NULL REFERENCES users(id));"
         working-directory: ./backend
+        env:
+          PGUSER: ${{ secrets.PGUSER }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          PGDATABASE: test_db
+          PGHOST: localhost
+          PGPORT: 5432
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       - name: Run backend tests
         run: npm test
