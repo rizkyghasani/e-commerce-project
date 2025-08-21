@@ -13,3 +13,5 @@ module.exports = {
   query: (text, params) => pool.query(text, params),
   pool, // Meng-export pool untuk penggunaan lebih lanjut
 };
+
+// tes tes
