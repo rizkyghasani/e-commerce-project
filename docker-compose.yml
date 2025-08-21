@@ -9,15 +9,15 @@ services:
       - "5001:5000"
     depends_on:
       postgres-db:
-        condition: service_healthy # Menunggu database sehat
+        condition: service_healthy
     environment:
       PGUSER: postgres
       PGHOST: postgres-db
       PGDATABASE: ecommerce_db
       PGPASSWORD: 080425
-      PGPORT: 5432
+      PGPORT: 5432   # tetap 5432 karena ini port internal container
       JWT_SECRET: supersecretjwtkey
-    command: sh -c "sleep 10 && npm start" # Menambahkan delay 10 detik
+    command: sh -c "sleep 10 && npm start"
     networks:
       - ecommerce-net
 
@@ -44,7 +44,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5433:5432"   # port host diubah ke 5433, port container tetap 5432
     networks:
       - ecommerce-net
     healthcheck:
