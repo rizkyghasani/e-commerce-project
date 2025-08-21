@@ -43,7 +43,7 @@ jobs:
       - name: Create database schema
         run: |
           psql -h localhost -p 5432 -U ${{ secrets.PGUSER }} -d test_db -c "CREATE TABLE users (id SERIAL PRIMARY KEY, email VARCHAR(255) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, role VARCHAR(50) NOT NULL DEFAULT 'buyer');"
-          psql -h localhost -p 5432 -U ${{ secrets.PGUSER }} -d test_db -c "CREATE TABLE products (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, description TEXT NOT NULL, price DECIMAL(10, 2) NOT NULL, image_url TEXT, seller_id INTEGER NOT NULL REFERENCES users(id));"
+          psql -h localhost -p 5432 -U ${{ secrets.PGUSER }} -d test_db -c "CREATE TABLE products (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, description TEXT NOT NULL, price DECIMAL(10, 2) NOT NULL, image_url TEXT, seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE);"
         working-directory: ./backend
         env:
           PGUSER: ${{ secrets.PGUSER }}
