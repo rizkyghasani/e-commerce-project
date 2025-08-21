@@ -7,7 +7,7 @@ const cors = require('cors'); // Mengimpor cors
 const app = express();
 const db = require('./db');
 const authRoutes = require('./routes/authRoutes');
-const productRoutes = require('./routes/productRoutes');
+const productRoutes = require('./routes/ProductRoutes');
 
 // Middleware
 app.use(express.json());
