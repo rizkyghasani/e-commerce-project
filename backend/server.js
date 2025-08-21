@@ -1,4 +1,4 @@
-// Memuat variabel lingkungan dari file .env
+// Memuat variabel lingkungann dari file .env
 require('dotenv').config();
 
 // Mengimpor Express, CORS, dan modul koneksi database
